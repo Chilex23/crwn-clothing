@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc} from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,6 +20,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+// Initialize Cloud Firestore and get a reference to the service
+const db = getFirestore(app);
 // const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
@@ -41,4 +44,26 @@ export const signInWithGoogle = async () => await signInWithPopup(auth, provider
   const credential = GoogleAuthProvider.credentialFromError(error);
   // ...
 });
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+  if (!userAuth) return;
+  const docRef = doc(db, "user", `${userAuth.uid}`);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    console.log("Document data:", docSnap.data());
+  } else {
+    // doc.data() will be undefined in this case
+    const { displayName, email } = userAuth;
+    const createdAt = new Date();
+
+    try {
+      await setDoc(docRef, { displayName, email, createdAt, ...additionalData });
+    } catch(error) {
+      console.log("Error creating user", error.message);
+    }
+    // console.log(docRef, "Document does not exist!");
+  }
+
+  return docRef;
+}
 export default app;
