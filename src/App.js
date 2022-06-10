@@ -9,7 +9,7 @@ import ShopPage from './pages/shop/shop.component';
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
 import Header from './components/header/header.component';
 import CheckoutPage from './pages/checkout/checkout.component';
-import CategoryPage from './pages/category/category.component';
+import CollectionPage from './pages/collection/collection.component';
 
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import { onSnapshot } from 'firebase/firestore';
@@ -48,9 +48,8 @@ class App extends React.Component {
         <Header/>
         <Routes>
           <Route exact path="/" element={<HomePage />} />
-          <Route exact path="/shop" element={<ShopPage />}>
-            <Route exact path=":categoryId" element={<CategoryPage />} />
-          </Route>
+          <Route path="/shop" element={<ShopPage />} />
+          <Route path="/shop/:collectionId" element={<CollectionPage />} />
           <Route exact path="/checkout" element={<CheckoutPage />} />
           <Route exact path="/signin" element={this.props.currentUser ? <Navigate replace to="/" /> : <SignInAndSignUpPage/>}/>
         </Routes>
