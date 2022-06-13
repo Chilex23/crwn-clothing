@@ -50,7 +50,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    return docSnap.data();
+    console.log("Document data:", docSnap.data());
   } else {
     // doc.data() will be undefined in this case
     const { displayName, email } = userAuth;
