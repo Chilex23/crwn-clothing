@@ -2,12 +2,8 @@
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc} from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, doc, getDoc, setDoc, collection, writeBatch } from "firebase/firestore";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAz8soOQIsSWeLloSYFTsvI9WTRyEp3zZI",
   authDomain: "crwn-db-db05e.firebaseapp.com",
@@ -18,14 +14,13 @@ const firebaseConfig = {
   measurementId: "G-DN2FQKYX54"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
-// const analytics = getAnalytics(app);
 export const auth = getAuth(app);
+
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
+
 export const signInWithGoogle = async () => await signInWithPopup(auth, provider)
 .then((result) => {
   // This gives you a Google Access Token. You can use it to access the Google API.
@@ -33,25 +28,26 @@ export const signInWithGoogle = async () => await signInWithPopup(auth, provider
   const token = credential.accessToken;
   // The signed-in user info.
   const user = result.user;
+  console.log(token, user);
   // ...
 }).catch((error) => {
   // Handle Errors here.
-  const errorCode = error.code;
+  // const errorCode = error.code;
   const errorMessage = error.message;
+  console.log(errorMessage)
   // The email of the user's account used.
-  const email = error.customData.email;
-  // The AuthCredential type that was used.
-  const credential = GoogleAuthProvider.credentialFromError(error);
-  // ...
+  // const email = error.customData.email;
+  // // The AuthCredential type that was used.
+  // const credential = GoogleAuthProvider.credentialFromError(error);
+  // // ...
 });
+
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
   const docRef = doc(db, "user", `${userAuth.uid}`);
   const docSnap = await getDoc(docRef);
 
-  if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
-  } else {
+  if (!docSnap.exists()) {
     // doc.data() will be undefined in this case
     const { displayName, email } = userAuth;
     const createdAt = new Date();
@@ -65,5 +61,20 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   }
 
   return docRef;
+};
+
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+  const collectionRef = collection(db, collectionKey);
+  console.log(collectionRef);
+
+  let batch = writeBatch(db);
+  objectsToAdd.forEach((obj) => {
+      const docRef = doc(collectionRef);
+      console.log(docRef.id);
+      batch.set(docRef, obj);
+    }
+  );
+  return await batch.commit();
 }
+
 export default app;
