@@ -1,22 +1,22 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { selectCollection } from "../../redux/shop/shop.selector";
 import CollectionItem from "../../components/collecion-item/collection-item.component";
-import {db, convertCollectionsSnapshotToMap } from "../../firebase/firebase.utils";
-import { collection, onSnapshot } from "firebase/firestore";
-import { updateCollections } from "../../redux/shop/shop.action";
+// import {db, convertCollectionsSnapshotToMap } from "../../firebase/firebase.utils";
+// import { collection, onSnapshot } from "firebase/firestore";
+// import { updateCollections } from "../../redux/shop/shop.action";
 import "./collection.styles.scss";
 
 const CollectionPage = () => {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        const collectionRef = collection(db, "collections");
-        onSnapshot(collectionRef, async snapshot => {
-            const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
-            dispatch(updateCollections(collectionsMap));
-        });
-      }, [dispatch]);
+    // const dispatch = useDispatch();
+    // useEffect(() => {
+    //     const collectionRef = collection(db, "collections");
+    //     onSnapshot(collectionRef, async snapshot => {
+    //         const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
+    //         dispatch(updateCollections(collectionsMap));
+    //     });
+    //   }, [dispatch]);
 
     const { collectionId } = useParams();
     const collecton = useSelector(state => selectCollection(collectionId)(state));
