@@ -48,7 +48,7 @@ class App extends React.Component {
       //addCollectionAndDocuments('collections', collectionsArray.map(({title, items}) => ({ title, items }) ));
     });
 
-    // Fetching the collections from the database and updating the state with the collections data from the database (if the data is not already present in the state) and then setting the loading to false so that the ShopPageWithSpinner component will render the ShopPage component and not the WithSpinner component anymore (which is the default behaviour) and then setting the loading to false so that the ShopPageWithSpinner component will render the ShopPage component and not the WithSpinner component anymore (which is the default behaviour) 
+    // Fetching the collections from the database and updating the state with the collections data from the database (if the data is not already present in the state) and then setting the loading to false so that the ShopPageWithSpinner component will render the ShopPage component and not the WithSpinner component anymore (which is the default behaviour)
     const { updateCollections } = this.props;
     const collectionRef = collection(db, "collections");
     onSnapshot(collectionRef, async snapshot => {
