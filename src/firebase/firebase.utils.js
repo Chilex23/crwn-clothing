@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, writeBatch } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -18,10 +18,10 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: "select_account" });
+export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
 
-export const signInWithGoogle = async () => await signInWithPopup(auth, provider)
+export const signInWithGoogle = async () => await signInWithPopup(auth, googleProvider)
 .then((result) => {
   // This gives you a Google Access Token. You can use it to access the Google API.
   const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -35,6 +35,25 @@ export const signInWithGoogle = async () => await signInWithPopup(auth, provider
   // const errorCode = error.code;
   const errorMessage = error.message;
   console.log(errorMessage)
+  // The email of the user's account used.
+  // const email = error.customData.email;
+  // // The AuthCredential type that was used.
+  // const credential = GoogleAuthProvider.credentialFromError(error);
+  // // ...
+});
+
+export const signInWithEmail = async (email, password) => await signInWithEmailAndPassword(auth, email, password)
+.then((userCredential) => {
+  // This gives you a Google Access Token. You can use it to access the Google API.
+  // The signed-in user info.
+  // const user = userCredential.user;
+  // console.log(token, user);
+  // ...
+}).catch((error) => {
+  // Handle Errors here.
+  // const errorCode = error.code;
+  // const errorMessage = error.message;
+  // console.log(errorMessage)
   // The email of the user's account used.
   // const email = error.customData.email;
   // // The AuthCredential type that was used.

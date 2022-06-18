@@ -12,65 +12,53 @@ import CheckoutPage from './pages/checkout/checkout.component';
 import CollectionPage from './pages/collection/collection.component';
 import WithSpinner from './components/with-spinner/with-spinner.component';
 
-import { auth, createUserProfileDocument, db, convertCollectionsSnapshotToMap } from './firebase/firebase.utils';
-import { collection, onSnapshot } from 'firebase/firestore';
-
-import { setCurrentUser } from "./redux/user/user.actions";
-import { updateCollections } from "./redux/shop/shop.action";
+import {fetchCollectionsStart } from "./redux/shop/shop.action";
 import { selectCurrentUser } from './redux/user/user.selectors';
-import { selectCollectionsForPreview } from './redux/shop/shop.selector';
+import { selectCollectionsForPreview, selectIsCollectionFetching, selectIsCollectionsLoaded } from './redux/shop/shop.selector';
 
-const ShopPageWithSpinner = WithSpinner(ShopPage);
 const CollectionPageWithSpinner = WithSpinner(CollectionPage);
+const HomePageWithSpinner = WithSpinner(HomePage);
 
 class App extends React.Component {
-  state = {
-    loading: true
-  };
-
   unsubsribeFromAuth = null;
 
   componentDidMount() {
-    const { setCurrentUser } = this.props;
-    this.unsubsribeFromAuth = auth.onAuthStateChanged(async userAuth => {
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth);
-        onSnapshot(userRef, async userDoc => {
-          setCurrentUser({
-              id: userAuth.uid,
-              ...userDoc.data()
-            })
-          });
-      } else {
-        // Setting the current user to null
-        setCurrentUser(userAuth);
-      }
-      //addCollectionAndDocuments('collections', collectionsArray.map(({title, items}) => ({ title, items }) ));
-    });
+    //const { setCurrentUser } = this.props;
+    // onAuthStateChanged is a firebase function that will return an userauth object when the user is logged in
+    // this.unsubsribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+    //   if (userAuth) {
+    //     const userRef = await createUserProfileDocument(userAuth);
+    //     onSnapshot(userRef, async userDoc => {
+    //       setCurrentUser({
+    //           id: userAuth.uid,
+    //           ...userDoc.data()
+    //         })
+    //       });
+    //   } else {
+    //     // Setting the current user to null
+    //     setCurrentUser(userAuth);
+    //   }
+    //   //addCollectionAndDocuments('collections', collectionsArray.map(({title, items}) => ({ title, items }) ));
+    // });
 
-    // Fetching the collections from the database and updating the state with the collections data from the database (if the data is not already present in the state) and then setting the loading to false so that the ShopPageWithSpinner component will render the ShopPage component and not the WithSpinner component anymore (which is the default behaviour)
-    const { updateCollections } = this.props;
-    const collectionRef = collection(db, "collections");
-    onSnapshot(collectionRef, async snapshot => {
-        const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
-        updateCollections(collectionsMap);
-        this.setState({ loading: false });
-    });
+    // Fetching the collections from the database and dispatching the action to the redux store to update the state with the collections data from the database (if the collections are not already in the store).
+    const { fetchCollectionsStart } = this.props;
+    fetchCollectionsStart();
   }
 
   componentWillUnmount() {
-    this.unsubsribeFromAuth();
+    //this.unsubsribeFromAuth();
   }
 
   render() {
-    const { loading } = this.state;
+    const { isCollectionFetching, isCollectionsLoaded } = this.props;
     return (
       <div>
         <Header/>
         <Routes>
-          <Route exact path="/" element={<HomePage />} />
-          <Route path="/shop" element={<ShopPageWithSpinner isLoading={loading} />} />
-          <Route path="/shop/:collectionId" element={<CollectionPageWithSpinner isLoading={loading} />} />
+          <Route exact path="/" element={<HomePageWithSpinner isLoading={isCollectionFetching} />} />
+          <Route path="/shop" element={<ShopPage />} />
+          <Route path="/shop/:collectionId" element={<CollectionPageWithSpinner isLoading={!isCollectionsLoaded} />} />
           <Route exact path="/checkout" element={<CheckoutPage />} />
           <Route exact path="/signin" element={this.props.currentUser ? <Navigate replace to="/" /> : <SignInAndSignUpPage/>}/>
         </Routes>
@@ -81,12 +69,13 @@ class App extends React.Component {
 
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
-  collectionsArray: selectCollectionsForPreview
+  collectionsArray: selectCollectionsForPreview,
+  isCollectionFetching: selectIsCollectionFetching,
+  isCollectionsLoaded: selectIsCollectionsLoaded
 });
 
 const mapDispatchToProps = dispatch => ({
-  setCurrentUser: user => dispatch(setCurrentUser(user)),
-  updateCollections: collectionsMap => dispatch(updateCollections(collectionsMap))
+  fetchCollectionsStart: () => dispatch(fetchCollectionsStart())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -30,7 +30,7 @@ class SignUp extends React.Component {
             .then((userCredential) => {
                 // Signed in 
                 const user = userCredential.user;
-                console.log(user);
+                // console.log(user);
                 createUserProfileDocument(user, {displayName});
                 this.setState({
                     displayName: "",

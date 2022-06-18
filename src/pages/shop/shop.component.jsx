@@ -1,9 +1,9 @@
 import React from "react";
-import CollectionsOverview from "../../components/collections-overview/collections-overview.component";
+import CollectionsOverviewContainer from "../../components/collections-overview/collections-overview.container";
 
 const ShopPage = () => (
         <div className="shop-page">
-            <CollectionsOverview />
+            <CollectionsOverviewContainer />
         </div>
 );
 
