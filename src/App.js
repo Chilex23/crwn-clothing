@@ -12,7 +12,8 @@ import CheckoutPage from './pages/checkout/checkout.component';
 import CollectionPage from './pages/collection/collection.component';
 import WithSpinner from './components/with-spinner/with-spinner.component';
 
-import {fetchCollectionsStart } from "./redux/shop/shop.action";
+import { fetchCollectionsStart } from "./redux/shop/shop.action";
+import { checkUserSession } from './redux/user/user.actions';
 import { selectCurrentUser } from './redux/user/user.selectors';
 import { selectCollectionsForPreview, selectIsCollectionFetching, selectIsCollectionsLoaded } from './redux/shop/shop.selector';
 
@@ -42,8 +43,9 @@ class App extends React.Component {
     // });
 
     // Fetching the collections from the database and dispatching the action to the redux store to update the state with the collections data from the database (if the collections are not already in the store).
-    const { fetchCollectionsStart } = this.props;
+    const { fetchCollectionsStart, checkUserSession } = this.props;
     fetchCollectionsStart();
+    checkUserSession();
   }
 
   componentWillUnmount() {
@@ -75,7 +77,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchCollectionsStart: () => dispatch(fetchCollectionsStart())
+  fetchCollectionsStart: () => dispatch(fetchCollectionsStart()),
+  checkUserSession: () => dispatch(checkUserSession())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

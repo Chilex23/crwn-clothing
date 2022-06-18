@@ -35,11 +35,6 @@ export const signInWithGoogle = async () => await signInWithPopup(auth, googlePr
   // const errorCode = error.code;
   const errorMessage = error.message;
   console.log(errorMessage)
-  // The email of the user's account used.
-  // const email = error.customData.email;
-  // // The AuthCredential type that was used.
-  // const credential = GoogleAuthProvider.credentialFromError(error);
-  // // ...
 });
 
 export const signInWithEmail = async (email, password) => await signInWithEmailAndPassword(auth, email, password)
@@ -51,14 +46,8 @@ export const signInWithEmail = async (email, password) => await signInWithEmailA
   // ...
 }).catch((error) => {
   // Handle Errors here.
-  // const errorCode = error.code;
-  // const errorMessage = error.message;
-  // console.log(errorMessage)
-  // The email of the user's account used.
-  // const email = error.customData.email;
-  // // The AuthCredential type that was used.
-  // const credential = GoogleAuthProvider.credentialFromError(error);
-  // // ...
+  const errorMessage = error.message;
+  console.log(errorMessage)
 });
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
@@ -112,5 +101,15 @@ export const convertCollectionsSnapshotToMap = (collections) => {
     return accumulator;
   } , {});
 };
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = auth.onAuthStateChanged(userAuth => {
+      unsubscribe();
+      resolve(userAuth);
+    }, reject);
+  }
+  );
+}
 
 export default app;
