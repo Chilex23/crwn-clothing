@@ -1,4 +1,3 @@
-import './App.css';
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -11,6 +10,8 @@ import Header from './components/header/header.component';
 import CheckoutPage from './pages/checkout/checkout.component';
 import CollectionPage from './pages/collection/collection.component';
 import WithSpinner from './components/with-spinner/with-spinner.component';
+
+import { GlobalStyles } from './global.styles';
 
 import { fetchCollectionsStart } from "./redux/shop/shop.action";
 import { checkUserSession } from './redux/user/user.actions';
@@ -56,6 +57,7 @@ class App extends React.Component {
     const { isCollectionFetching, isCollectionsLoaded } = this.props;
     return (
       <div>
+        <GlobalStyles />
         <Header/>
         <Routes>
           <Route exact path="/" element={<HomePageWithSpinner isLoading={isCollectionFetching} />} />
